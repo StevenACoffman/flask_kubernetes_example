@@ -4,7 +4,7 @@ RUN mkdir -p /application
 
 COPY requirements.txt /application/
 
-RUN apk --update add --virtual build-dependencies python-dev build-base gcc libc-dev linux-headers wget \
+RUN apk --update add --virtual build-dependencies python3-dev build-base gcc libc-dev linux-headers wget \
   && pip install -r /application/requirements.txt \
   && apk del build-dependencies
 

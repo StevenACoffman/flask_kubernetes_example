@@ -1,10 +1,10 @@
 ## Bringing up the web application, along with prometheus
 
 The [docker-compse.yml](docker-compose.yml) brings up the `webapp` service which is our web application
-using the image `amitsaha/flask_app` we built above. The [docker-compose-infra.yml](docker-compose-infra.yml)
+using the image `stevenacoffman/flask_kubernetes_example` we built above. The [docker-compose-infra.yml](docker-compose-infra.yml)
 file brings up the `prometheus` service and also starts the `grafana` service which
 is available on port 3000. The config directory contains a `prometheus.yml` file
-which sets up the targets for prometheus to scrape. The scrape configuration 
+which sets up the targets for prometheus to scrape. The scrape configuration
 looks as follows:
 
 ```
@@ -30,16 +30,15 @@ scrape_configs:
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
     static_configs:
-        - targets: ['webapp:5000']
+        - targets: ['webapp:8888']
 ```
 
 Prometheus scrapes itself, which is the first target above. The second target
-is the our web application on port 5000.
-Since these services are running via `docker-compose`, `webapp` automatically resolves to the IP of the webapp container. 
+is the our web application on port 8888.
+Since these services are running via `docker-compose`, `webapp` automatically resolves to the IP of the webapp container.
 
 To bring up all the services:
 
 ```
 $ docker-compose -f docker-compose.yml -f docker-compose-infra.yml up
 ```
-
