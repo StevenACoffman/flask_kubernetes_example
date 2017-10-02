@@ -15,11 +15,19 @@ ENV PORT 8888
 
 EXPOSE ${PORT}
 
-ARG GIT_COMMIT=unknown
-LABEL git-commit=$GIT_COMMIT
-ARG GIT_BRANCH=unknown
-LABEL git-branch=$GIT_BRANCH
-ARG BUILD_TIME=unknown
-LABEL build_time=$BUILD_TIME
+ARG GIT_REPO="unknown"
+ARG GIT_COMMIT="unknown"
+ARG GIT_BRANCH="unknown"
+ARG BUILD_TIME="unknown"
+
+LABEL name="Flask Kubernetes Example" \
+  maintainer="StevenACoffman" \
+  git-repo="$GIT_REPO" \
+  git-commit="$GIT_COMMIT" \
+  git-branch="$GIT_BRANCH" \
+  version="$GIT_COMMIT" \
+  build_time="$BUILD_TIME" \
+  description="Example Flask app with Prometheus for Kubernetes"
+
 
 CMD uwsgi --http :${PORT}  --manage-script-name --mount /application=flask_app:app --enable-threads --processes 5

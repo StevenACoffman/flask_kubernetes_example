@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  webapp:
+    image: stevenacoffman/flask_kubernetes_example
+    container_name: webapp
+    expose:
+      - 5000
+    ports:
+      - 5000:5000
+    volumes:
+      - ./src:/application
