@@ -53,3 +53,11 @@ We can just run the web application as follows:
 ```
 $ docker run  -ti -p 8888:8888 stevenacoffman/flask_kubernetes_example
 ```
+
+## Running the application via compose
+
+See the compose directory for a way to run the flask app and a prometheus server locally via docker compose
+
+## Running the application via Kubernetes
+
+kubectl apply -f flask-k8s.yaml
