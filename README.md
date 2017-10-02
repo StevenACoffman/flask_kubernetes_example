@@ -43,7 +43,7 @@ worker processes.
 To build the image:
 
 ```
-$ docker build -t amitsaha/flask_app .
+$ docker build -t stevenacoffman/flask_kubernetes_example .
 ```
 
 ## Running the application
