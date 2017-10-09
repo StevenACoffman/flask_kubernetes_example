@@ -1,8 +1,8 @@
 FROM python:3.6-alpine
 
-RUN mkdir -p /application
+WORKDIR /application
 
-COPY requirements.txt /application/
+COPY requirements.txt .
 
 # --no-cache option preferred over --update
 
@@ -11,12 +11,8 @@ RUN apk add --no-cache su-exec tini \
   && pip install -r /application/requirements.txt \
   && apk del build-dependencies
 
-WORKDIR /application
-COPY ./src /application/
-
-ENV PORT 8888
-
-EXPOSE ${PORT}
+# Add your source files
+COPY ./src .
 
 ARG GIT_REPO="unknown"
 ARG GIT_COMMIT="unknown"
@@ -31,6 +27,11 @@ LABEL name="Flask Kubernetes Example" \
   version="$GIT_COMMIT" \
   build_time="$BUILD_TIME" \
   description="Example Flask app with Prometheus for Kubernetes"
+
+# replace this with your application's default port
+ENV PORT 8888
+
+EXPOSE ${PORT}
 
 # Set tini as the default entrypoint
 ENTRYPOINT ["tini", "--"]
