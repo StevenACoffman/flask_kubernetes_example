@@ -6,7 +6,7 @@ COPY requirements.txt /application/
 
 # --no-cache option preferred over --update
 
-RUN apk add --no-cache su-exec tini
+RUN apk add --no-cache su-exec tini \
   && apk --no-cache add --virtual build-dependencies python3-dev build-base gcc libc-dev linux-headers wget \
   && pip install -r /application/requirements.txt \
   && apk del build-dependencies
