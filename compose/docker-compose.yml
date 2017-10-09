@@ -5,8 +5,6 @@ services:
     image: stevenacoffman/flask_kubernetes_example
     container_name: webapp
     expose:
-      - 5000
+      - 8888
     ports:
-      - 5000:5000
-    volumes:
-      - ./src:/application
+      - 8888:8888

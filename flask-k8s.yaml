@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: flask-example
   labels:
-    app: flask-example
+    run: flask-example
 spec:
   type: NodePort
   ports:
@@ -12,7 +12,7 @@ spec:
     protocol: TCP
     name: http
   selector:
-    app: flask-example
+    run: flask-example
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
@@ -23,7 +23,7 @@ spec:
   template: # create pods using pod definition in this template
     metadata:
       labels:
-        app: flask-example
+        run: flask-example
     spec:
       containers:
       - name: flask-example
@@ -51,3 +51,35 @@ spec:
         #     scheme: HTTP
         #   initialDelaySeconds: 5
         #   timeoutSeconds: 1
+      - name: eureka-yup
+        image: docker-registry.acorn.cirrostratus.org/playground/eureka-yup:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        env:
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: APP_CONT_ID
+          value: "K8S"
+        - name: SGK_APP
+          value: "flask-example"
+        - name: SGK_ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: seq-base
+              key: sequoia.environment
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name

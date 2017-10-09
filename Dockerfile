@@ -4,7 +4,10 @@ RUN mkdir -p /application
 
 COPY requirements.txt /application/
 
-RUN apk --update add --virtual build-dependencies python3-dev build-base gcc libc-dev linux-headers wget \
+# --no-cache option preferred over --update
+
+RUN apk add --no-cache su-exec tini
+  && apk --no-cache add --virtual build-dependencies python3-dev build-base gcc libc-dev linux-headers wget \
   && pip install -r /application/requirements.txt \
   && apk del build-dependencies
 
@@ -29,5 +32,7 @@ LABEL name="Flask Kubernetes Example" \
   build_time="$BUILD_TIME" \
   description="Example Flask app with Prometheus for Kubernetes"
 
+# Set tini as the default entrypoint
+ENTRYPOINT ["tini", "--"]
 
 CMD uwsgi --http :${PORT}  --manage-script-name --mount /application=flask_app:app --enable-threads --processes 5
