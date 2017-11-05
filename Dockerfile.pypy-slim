@@ -1,0 +1,63 @@
+# if you're doing anything beyond your local machine, please pin this to a specific version at https://hub.docker.com/_/python/
+# format is python:${PYTHON_VER}-alpine${ALPINE_VER}
+FROM pypy:3-5.9.0-slim
+
+
+# For AWS CLI
+ENV PYTHONIOENCODING=UTF-8
+
+ENV LANG C.UTF-8
+
+# tini and su-exec because both PID 1 and root are special
+
+ENV TINI_VERSION v0.16.1
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
+
+RUN apt-get update && \
+    apt-get dist-upgrade -y
+
+WORKDIR /application
+
+# Install dependencies first, add code later, for layering
+COPY requirements.txt .
+
+#  python-pip?
+# need gcc headers and stuff? You should apt-get them here
+RUN CC=gcc; \
+    buildDeps='build-essential' ; \
+    apt-get install -y $buildDeps --no-install-recommends ; \
+    pip install uwsgi==2.0.15 uwsgitop==0.10; \
+    pip install -r requirements.txt; \
+    apt-get purge -y --auto-remove $buildDeps
+
+# Add your source files
+COPY ./src .
+
+# Build arguments may change independent of source code, order after
+
+ARG GIT_REPO="unknown"
+ARG GIT_COMMIT="unknown"
+ARG GIT_BRANCH="unknown"
+ARG BUILD_TIME="unknown"
+
+LABEL name="Flask Kubernetes Example" \
+  maintainer="StevenACoffman" \
+  git-repo="$GIT_REPO" \
+  git-commit="$GIT_COMMIT" \
+  git-branch="$GIT_BRANCH" \
+  version="$GIT_COMMIT" \
+  build_time="$BUILD_TIME" \
+  description="Example Flask app with Prometheus for Kubernetes"
+
+# replace this with your application's default port
+ENV PORT 8888
+
+EXPOSE ${PORT}
+
+# Without tini, PID as 1 leaves orphan processes
+# Set tini as the default entrypoint
+ENTRYPOINT ["tini", "--"]
+
+CMD uwsgi --http :${PORT}  --manage-script-name --mount /application=flask_app:app --enable-threads --processes 5
