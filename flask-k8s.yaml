@@ -24,14 +24,15 @@ spec:
     metadata:
       labels:
         run: flask-example
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8888"
     spec:
       containers:
       - name: flask-example
         image: stevenacoffman/flask_kubernetes_example:latest
-        imagePullPolicy: Always
         ports:
-        - name: http
-          containerPort: 8888
+        - containerPort: 8888
         # resources:
         #   limits:
         #     cpu: 0.2
